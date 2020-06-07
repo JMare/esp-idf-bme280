@@ -5,6 +5,7 @@
 #include <driver/i2c.h>
 
 #include "bme280_idf.h"
+#include "bme280_defs.h"
 
 static const char* TAG = "MAIN";
 
@@ -44,4 +45,19 @@ void app_main(void)
     i2c_set_timeout(I2C_PORT_NUM,0xFFFFF);
 
     ESP_ERROR_CHECK(bme280_begin(I2C_PORT_NUM,0x77));
+
+    while(true)
+    {
+        vTaskDelay(300/portTICK_PERIOD_MS);
+
+        struct bme280_data comp_data;
+        bme280_get_forced_data(&comp_data);
+
+        float temp, press, hum;
+
+        temp = comp_data.temperature;
+        press = 0.01 * comp_data.pressure;
+        hum = comp_data.humidity;
+        printf("%0.2lf deg C, %0.2lf hPa, %0.2lf%%\n", temp, press, hum);
+    }
 }

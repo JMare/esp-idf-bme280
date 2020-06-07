@@ -12,6 +12,9 @@
 
 i2c_port_t _port_num;
 uint8_t _dev_addr;
+struct bme280_dev _dev;
+struct bme280_data _comp_data;
+uint32_t _req_delay;
 
 // Delay function to provide to the bme280 driver
 void bme280_delay_ms(uint32_t ms)
@@ -86,8 +89,44 @@ esp_err_t  bme280_begin(i2c_port_t port_num, uint8_t dev_addr)
     int8_t ret = BME280_OK;
 
     ret = bme280_init(&dev);
-    if(ret == BME280_OK)
-        return ESP_OK;
+    if(ret != BME280_OK)
+        return ESP_ERR_NOT_FOUND;
     
-    return ESP_ERR_NOT_FOUND;
+    uint8_t settings_sel = 0;
+    uint32_t req_delay;
+
+    dev.settings.osr_h = BME280_OVERSAMPLING_1X;
+    dev.settings.osr_p = BME280_OVERSAMPLING_16X;
+    dev.settings.osr_t = BME280_OVERSAMPLING_2X;
+    dev.settings.filter = BME280_FILTER_COEFF_16;
+
+    settings_sel = BME280_OSR_PRESS_SEL | BME280_OSR_TEMP_SEL | BME280_OSR_HUM_SEL | BME280_FILTER_SEL;
+
+    ret = bme280_set_sensor_settings(settings_sel,&dev);
+    if(ret != BME280_OK)
+        return ESP_ERR_INVALID_ARG;
+
+
+    // how fast we can sample
+    req_delay = bme280_cal_meas_delay(&dev.settings);
+
+
+    // Save the setup to global scope
+    _dev = dev;
+    _req_delay = req_delay;
+
+    return ESP_OK;
+}
+
+esp_err_t bme280_get_forced_data(struct bme280_data *comp)
+{
+    int8_t ret = bme280_set_sensor_mode(BME280_FORCED_MODE, &_dev);
+    if(ret != BME280_OK)
+        return ESP_ERR_INVALID_RESPONSE;
+    
+    ret = bme280_get_sensor_data(BME280_ALL,comp,&_dev);
+    if(ret != BME280_OK)
+        return ESP_ERR_INVALID_RESPONSE;
+    
+    return ESP_OK;
 }
