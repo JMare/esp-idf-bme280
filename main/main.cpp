@@ -4,6 +4,8 @@
 #include "esp_log.h"
 #include <driver/i2c.h>
 
+#include "bme280_idf.h"
+
 static const char* TAG = "MAIN";
 
 #define I2C_SCL_IO				22	//19               /*!< gpio number for I2C master clock */
@@ -40,4 +42,6 @@ void app_main(void)
 
     i2c_master_init();
     i2c_set_timeout(I2C_PORT_NUM,0xFFFFF);
+
+    ESP_ERROR_CHECK(bme280_begin(I2C_PORT_NUM,0x77));
 }
