@@ -9,20 +9,15 @@
 
 static const char* TAG = "MAIN";
 
-#define I2C_SCL_IO				22	//19               /*!< gpio number for I2C master clock */
-#define I2C_SDA_IO				21	//18               /*!< gpio number for I2C master data  */
-#define I2C_FREQ_HZ				400000           /*!< I2C master clock frequency */
-#define I2C_PORT_NUM			I2C_NUM_0        /*!< I2C port number for master dev */
-#define I2C_TX_BUF_DISABLE  	0                /*!< I2C master do not need buffer */
-#define I2C_RX_BUF_DISABLE  	0                /*!< I2C master do not need buffer */
-#define ACK_CHECK_EN                       0x1              /*!< I2C master will check ack from slave*/
-#define ACK_CHECK_DIS                      0x0              /*!< I2C master will not check ack from slave */
-
+#define I2C_SCL_IO          22        /*!< gpio number for I2C master clock */
+#define I2C_SDA_IO          21        /*!< gpio number for I2C master data  */
+#define I2C_FREQ_HZ         400000    /*!< I2C master clock frequency */
+#define I2C_PORT_NUM        I2C_NUM_0 /*!< I2C port number for master dev */
+#define I2C_TX_BUF_DISABLE  0         /*!< I2C master do not need buffer */
+#define I2C_RX_BUF_DISABLE  0         /*!< I2C master do not need buffer */
+#define ACK_CHECK_EN        0x1       /*!< I2C master will check ack from slave*/
+#define ACK_CHECK_DIS       0x0       /*!< I2C master will not check ack from slave */
 #define BQ27441_I2C_ADDRESS 0x55
-
-extern "C" {
-    void app_main(void);
-};
 
 static esp_err_t i2c_master_init(void)
 {
